@@ -8,7 +8,7 @@ namespace ElCriolloAPI.Models
 
         [Key]
         [Column("UsuarioID")]
-        public int Id { get; set; }
+        public int UsuarioId { get; set; }
         [Required]
         [StringLength(100)]
         public string NombreCompleto { get; set; } = string.Empty;
@@ -31,6 +31,5 @@ namespace ElCriolloAPI.Models
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
         public virtual ICollection<Pedido> Pedidos { get; set; } = new List<Pedido>();
-        public int UsuarioID { get; internal set; }
     }
 }
