@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElCriolloAPI", "ElCriolloAPI.csproj", "{EA9490FC-B475-4B5F-8535-B8E5CA4870FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA9490FC-B475-4B5F-8535-B8E5CA4870FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9490FC-B475-4B5F-8535-B8E5CA4870FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9490FC-B475-4B5F-8535-B8E5CA4870FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9490FC-B475-4B5F-8535-B8E5CA4870FC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1F8668B4-6159-46DE-B06D-3B398C19C1EA}
+	EndGlobalSection
+EndGlobal
