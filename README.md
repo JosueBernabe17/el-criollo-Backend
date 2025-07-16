@@ -1,4 +1,4 @@
-# 🍽️ El Criollo Backend API
+#  El Criollo Backend API
 
 **ASP.NET Core Web API for El Criollo Restaurant Management System**
 
