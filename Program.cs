@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ElCriolloAPI.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +14,33 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ✅ CONFIGURAR CORS (Para que Swagger funcione)
+// ✅ CONFIGURAR JWT AUTHENTICATION
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // Solo para desarrollo
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidateAudience = true,
+        ValidAudience = jwtSettings["Audience"],
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+// ✅ CONFIGURAR CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -22,7 +51,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ✅ CONFIGURAR SWAGGER
+// ✅ CONFIGURAR SWAGGER CON JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -30,7 +59,32 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "El Criollo API",
         Version = "v1",
-        Description = "API para el restaurante El Criollo - Sabor Dominicano Auténtico"
+        Description = "API para el restaurante El Criollo con autenticación JWT"
+    });
+
+    // Configuración para JWT en Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
 });
 
@@ -47,14 +101,17 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// ✅ USAR CORS
+// ✅ ORDEN IMPORTANTE DEL MIDDLEWARE
 app.UseCors("AllowAll");
-
 app.UseHttpsRedirection();
+
+// ✅ AGREGAR AUTHENTICATION Y AUTHORIZATION
+app.UseAuthentication(); // ← Debe ir ANTES de UseAuthorization
 app.UseAuthorization();
+
 app.MapControllers();
 
-// ✅ PROBAR CONEXIÓN A BASE DE DATOS
+// Probar conexión a base de datos
 try
 {
     using (var scope = app.Services.CreateScope())
@@ -69,7 +126,8 @@ catch (Exception ex)
     Console.WriteLine($"❌ Error conectando a base de datos: {ex.Message}");
 }
 
-Console.WriteLine("🍽️ El Criollo API iniciada exitosamente!");
+Console.WriteLine(" El Criollo API iniciada exitosamente!");
+Console.WriteLine(" JWT Authentication configurado");
 Console.WriteLine($"🌐 Swagger disponible en: https://localhost:7122/swagger");
 
 app.Run();
