@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ElCriolloAPI.Data;
+using ElCriolloAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -13,7 +14,8 @@ builder.Services.AddControllers();
 // ✅ CONFIGURAR ENTITY FRAMEWORK
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+//CONFIGURAR EMAIL SERVICE
+builder.Services.AddScoped<IEmailService, EmailService>();
 // ✅ CONFIGURAR JWT AUTHENTICATION
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
@@ -117,8 +119,10 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
         await context.Database.CanConnectAsync();
         Console.WriteLine("✅ Conexión a base de datos exitosa!");
+        Console.WriteLine("📧 EmailService configurado y listo!");
     }
 }
 catch (Exception ex)

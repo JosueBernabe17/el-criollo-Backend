@@ -1,8 +1,4 @@
-﻿// 🍽️ MESAS CONTROLLER CON DTOs - EL CRIOLLO
-// Author: Josué Bernabé
-// Description: API endpoints for restaurant table management with clean DTOs
-
-using ElCriolloAPI.Data;
+﻿using ElCriolloAPI.Data;
 using ElCriolloAPI.DTOS;
 using ElCriolloAPI.Models;
 using Microsoft.AspNetCore.Authorization;
